@@ -14,21 +14,26 @@ pipeline {
 
         stage('Build with Maven') {
             steps {
-                bat 'mvn -version'
                 bat 'mvn clean package'
             }
         }
 
         stage('Build Docker Image') {
+            when {
+                branch 'main'
+            }
             steps {
                 bat 'docker build -t java-docker-app:latest .'
             }
         }
+    }
 
-        stage('Run Docker Container') {
-            steps {
-                bat 'docker run --rm java-docker-app:latest'
-            }
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed. Check the console output.'
         }
     }
 }
